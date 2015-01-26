@@ -1,0 +1,55 @@
+{
+  "name": "zikcenter",
+  "version": "0.1.8-1",
+  "description": "A software to broadcast music",
+  "main": "zikcenter.js",
+  "dependencies": {
+    "check-update": "0.0.3",
+    "colors": "^1.0.3",
+    "commander": "~2.5.1",
+    "express": "4.10.6",
+    "serve-static": "~1.7.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cedced19/ZikCenter"
+  },
+  "keywords": [
+    "musics",
+    "music",
+    "cli",
+    "basic",
+    "center",
+    "random"
+  ],
+  "bugs": {
+    "url": "https://github.com/cedced19/ZikCenter/issues"
+  },
+  "homepage": "https://github.com/cedced19/ZikCenter",
+  "bin": {
+    "zik": "zikcenter.js"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-uglify": "~0.6.0",
+    "matchdep": "~0.3.0",
+    "grunt-contrib-cssmin": "~0.10.0",
+    "grunt-contrib-copy": "~0.7.0",
+    "grunt-usemin": "~3.0.0",
+    "grunt-contrib-htmlmin": "~0.3.0",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-uncss": "~0.3.6",
+    "grunt-autoprefixer": "~2.0.0"
+  },
+  "author": {
+    "name": "Cédric",
+    "email": "cedced19@gmail.com",
+    "url": "https://github.com/cedced19"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://cedced19.github.io/license/"
+    }
+  ]
+}
