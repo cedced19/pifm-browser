@@ -1,7 +1,7 @@
 #pifm-browser
 
 __Work in progress!__   
-A Node.js software to play random music on a __FM radio__.  
+A Node.js software to play musics on a __FM radio__.  
 Only on Raspberry Pi and Chrome.
 
 [![Build Status](https://travis-ci.org/cedced19/pifm-browser.svg)](https://travis-ci.org/cedced19/pifm-browser)
