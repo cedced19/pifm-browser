@@ -21,9 +21,6 @@
     "random",
     "fm"
   ],
-  "scripts": {
-    "test": "mocha --timeout 20000"
-  },
   "bugs": {
     "url": "https://github.com/cedced19/pifm-browser/issues"
   },
