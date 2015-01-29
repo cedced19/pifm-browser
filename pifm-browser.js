@@ -5,35 +5,44 @@ var app = require('express')(),
     path = require('path'), 
     fs = require('fs'), 
     colors = require('colors'), 
-    pkg = require('./package.json'), 
+    config = require('./config.json'),
     ls = require('./lib/ls'), 
-    list = ls('./');
+    list = ls('./'),
+    exec = require('child_process').execFile,
+    proc = null;
 
 app.get('/api', function (req, res) {
   res.json(list);
 });
 
-app.get('/api/refresh', function (req, res) {
-  list = ls('./');
-  res.json(list);
-});
-
-app.get('/api/play/:id', function (req, res) {
-  list.forEach(function(zik){
-      if (req.params.id == zik.id) {
-          return;
-      }
-  });
-  res.end();
-});
-
-app.get('/api/stop', function (req, res) {
-  res.end();
-});
-
 app.use(serveStatic(__dirname));
 
 var server = require('http').createServer(app);
-server.listen(7775, function () {
-  console.log('Server running at\n  => ' + colors.green('http://localhost:7775') + '\nCTRL + C to shutdown');
+server.listen(config.port, function () {
+  console.log('Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
+});
+var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function(socket){
+    socket.on('play', function(id){
+        list.forEach(function(zik){
+          if (id == zik.id) {
+              if (proc) proc.kill();
+              proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
+                proc = null;
+                socket.emit('random');
+              });
+          }
+      });
+    });
+    
+    socket.on('pause', function(id){
+        proc && proc.kill();
+        proc = null;
+    });
+    
+    socket.on('refresh', function(){
+        list = ls('./');
+        io.sockets.emit('refresh', list);
+    });
 });

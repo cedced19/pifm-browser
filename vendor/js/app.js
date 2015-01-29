@@ -1,17 +1,24 @@
-angular.module('PifmBrowser', []).controller('PifmBrowserCtrl', ['$scope', '$http', function ($scope, $http) {
+angular.module('PifmBrowser', [])
+.controller('PifmBrowserCtrl', ['$scope', '$http', function ($scope, $http) {
     $http.get('/api').success(function (data) {
+      var socket = io.connect('http://localhost:7775');
       $scope.musics = data;
       $scope.currentzik = null;
-      $scope.isstop = true;
         
       $scope.setzik = function (zik) {
         if (zik !== null) {
           $scope.lastzik = $scope.currentzik;
           $scope.currentzik = zik;
-          $http.get('/api/play/' + $scope.currentzik.id).success(function (data) {
-            $scope.isstop = data;
-          });
+          socket.emit('play', $scope.currentzik.id);
         }
+      };
+        
+      $scope.refresh = function () {
+        socket.emit('refresh');
+      };
+      
+      $scope.stop = function () {
+        socket.emit('pause');
       };
         
       $scope.random = function () {
@@ -23,17 +30,13 @@ angular.module('PifmBrowser', []).controller('PifmBrowserCtrl', ['$scope', '$htt
         }
       };
         
-      $scope.refresh = function () {
-        $http.get('/api/refresh').success(function (data) {
+      socket.on('random', function () {
+          $scope.random();
+      });
+        
+      socket.on('refresh', function (data) {
           $scope.musics = data;
-        });
-      };
-      
-      $scope.stop = function () {
-        $http.get('/api/stop').success(function (data) {
-          $scope.isstop = data;
-        });
-      };
+      });
         
     }).error(function () {
       $scope.error = true;

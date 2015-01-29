@@ -11,6 +11,7 @@ module.exports = function(grunt) {
             'vendor/**/*.*',
             'package.json',
             'pifm-browser.js',
+            'pifm',
             'lib/*.js',
             'favicon.ico',
             'README.md'
