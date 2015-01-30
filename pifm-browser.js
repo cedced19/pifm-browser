@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
-var app = require('express')(), 
-    serveStatic = require('serve-static'), 
+var hapi = require('hapi'),
+    app = new hapi.Server(), 
     path = require('path'), 
     fs = require('fs'), 
     colors = require('colors'), 
@@ -11,22 +11,36 @@ var app = require('express')(),
     exec = require('child_process').execFile,
     proc = null;
 
-app.get('/api', function (req, res) {
-  res.json(list);
+app.connection({ port: config.port });
+
+app.route({
+    method: 'GET',
+    path: '/api/',
+    handler: function (request, reply) {
+        reply(list);
+    }
 });
 
-app.use(serveStatic(__dirname));
+app.route({
+    method: 'GET',
+    path: '/{param*}',
+    handler: {
+        directory: {
+            path: './'
+        }
+    }
+});
 
-var server = require('http').createServer(app);
-server.listen(config.port, function () {
+app.start(function () {
   console.log('Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
 });
-var io = require('socket.io').listen(server);
+var io = require('socket.io').listen(app.listener);
 
 io.sockets.on('connection', function(socket){
     socket.on('play', function(id){
         list.forEach(function(zik){
           if (id == zik.id) {
+              socket.broadcast.emit('info', zik.id);
               if (proc) proc.kill();
               proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
                 proc = null;
@@ -43,6 +57,6 @@ io.sockets.on('connection', function(socket){
     
     socket.on('refresh', function(){
         list = ls('./');
-        io.sockets.emit('refresh', list);
+        io.emit('refresh', list);
     });
 });

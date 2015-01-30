@@ -1,7 +1,7 @@
 angular.module('PifmBrowser', [])
 .controller('PifmBrowserCtrl', ['$scope', '$http', function ($scope, $http) {
-    $http.get('/api').success(function (data) {
-      var socket = io.connect('http://localhost:7775');
+    $http.get('/api/').success(function (data) {
+      var socket = io.connect(window.location.host);
       $scope.musics = data;
       $scope.currentzik = null;
         
@@ -36,6 +36,15 @@ angular.module('PifmBrowser', [])
         
       socket.on('refresh', function (data) {
           $scope.musics = data;
+      });
+      
+      socket.on('info', function (id) {
+          $scope.musics.forEach(function(zik) {
+            if (id == zik.id) {
+                $scope.lastzik = $scope.currentzik;
+                $scope.currentzik = zik;
+            }
+          });
       });
         
     }).error(function () {
