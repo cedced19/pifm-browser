@@ -32,7 +32,7 @@
                 <h1>{{currentzik.name}}</h1>
                 <h4 class="click" ng-click="setzik(lastzik)">Last music: {{lastzik.name}}</h4>
                 <p>
-                    <a class="click btn btn-lg btn-success" role="button" ng-click="random()">Change music</a>
+                    <a class="click btn btn-lg btn-success" role="button" ng-click="random(true)">Change music</a>
                     <a class="click btn btn-lg btn-success" role="button" ng-click="stop()">Stop</a>
                 </p>
                 <p>
@@ -44,7 +44,7 @@
             <div>
                 <p><input ng-model="search" type="text" class="form-control" placeholder="Search"></p>
                 <ul>
-                    <li class="click" ng-repeat="zik in musics | filter:search" role="button" ng-click="setzik(zik)">{{zik.name}}</li>
+                    <li class="click" ng-repeat="zik in musics | filter:search" role="button" ng-click="setzik(zik, true)">{{zik.name}}</li>
                 </ul>
             </div>
 

@@ -51,7 +51,7 @@ io.sockets.on('connection', function(socket){
       });
     });
     
-    socket.on('pause', function(id){
+    socket.on('stop', function(id){
         proc && proc.kill();
         proc = null;
     });

@@ -4,12 +4,13 @@ angular.module('PifmBrowser', [])
       var socket = io.connect(window.location.host);
       $scope.musics = data;
       $scope.currentzik = null;
-      $scope.isstop = false;
+      $scope.want = false;
         
-      $scope.setzik = function (zik) {
+      $scope.setzik = function (zik, want) {
         if (zik !== null) {
           $scope.lastzik = $scope.currentzik;
           $scope.currentzik = zik;
+          $scope.want = want; 
           socket.emit('play', $scope.currentzik.id);
         }
       };
@@ -19,31 +20,32 @@ angular.module('PifmBrowser', [])
       };
       
       $scope.stop = function () {
-        socket.emit('pause');
-        $scope.isstop = true;
+        socket.emit('stop');
+        $scope.want = true;
       };
         
-      $scope.random = function () {
+      $scope.random = function (want) {
         var number = Math.floor(Math.random() * $scope.musics.length);
         if ($scope.currentzik != $scope.musics[number]) {
-          $scope.setzik($scope.musics[number]);
+          $scope.setzik($scope.musics[number], want);
         } else {
-          $scope.random();
+          $scope.random(want);
         }
       };
     
-      $scope.random();
+      $scope.random(true);
         
       socket.on('random', function () {
-          if ($scope.isstop) {
-            $scope.isstop = false;
-            return false;
+          if ($scope.want) {
+            $scope.want = false;
+          } else {
+            $scope.random(false);   
           }
-          $scope.random();
       });
         
       socket.on('refresh', function (data) {
           $scope.musics = data;
+          $scope.random(true);
       });
       
       socket.on('info', function (id) {
