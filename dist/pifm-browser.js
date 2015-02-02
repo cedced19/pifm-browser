@@ -37,6 +37,9 @@ app.start(function () {
 
 var io = require('socket.io').listen(app.listener);
 io.sockets.on('connection', function(socket){
+    if (!proc) {
+        socket.emit('random');
+    }
     
     socket.on('play', function(id){
         list.forEach(function(zik){

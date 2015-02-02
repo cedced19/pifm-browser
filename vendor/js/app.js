@@ -32,8 +32,6 @@ angular.module('PifmBrowser', [])
           $scope.random(want);
         }
       };
-    
-      $scope.random(true);
         
       socket.on('random', function () {
           if ($scope.want) {
