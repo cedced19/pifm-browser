@@ -8,6 +8,7 @@ module.exports = function(grunt) {
           expand: true,
           src: [
             'index.html',
+            'false.html',
             'vendor/**/*.*',
             'package.json',
             'pifm-browser.js',
@@ -73,7 +74,8 @@ module.exports = function(grunt) {
             collapseWhitespace: true
           },
           files: {
-            'dist/index.html': 'dist/index.html'
+            'dist/index.html': 'dist/index.html',
+            'dist/false.html': 'dist/false.html'
           }
       }
   }

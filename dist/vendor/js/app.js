@@ -32,8 +32,11 @@ angular.module('PifmBrowser', [])
           $scope.random(want);
         }
       };
+    
+      $scope.random(false);
         
       socket.on('random', function () {
+          console.log('test')
           if ($scope.want) {
             $scope.want = false;
           } else {
@@ -44,15 +47,6 @@ angular.module('PifmBrowser', [])
       socket.on('refresh', function (data) {
           $scope.musics = data;
           $scope.random(true);
-      });
-      
-      socket.on('info', function (id) {
-          $scope.musics.forEach(function(zik) {
-            if (id == zik.id) {
-                $scope.lastzik = $scope.currentzik;
-                $scope.currentzik = zik;
-            }
-          });
       });
         
     }).error(function () {

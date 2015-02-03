@@ -1,5 +1,6 @@
 #pifm-browser
 
+__Work in progress!__   
 A Node.js software to play musics on a __FM radio__.  
 Only on Raspberry Pi.
 
@@ -22,14 +23,6 @@ $ node pifm-browser.js
 ```
 
 You can place your musics anywhere in the folder.
-
-##How to build ?
-
-I use `grunt` to compress all my files:
-```bash
-$ npm install
-$ grunt
-```
 
 ##Configuration
 

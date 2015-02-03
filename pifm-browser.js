@@ -23,10 +23,22 @@ app.route({
 
 app.route({
     method: 'GET',
-    path: '/{param*}',
+    path: '/vendor/{param*}',
     handler: {
         directory: {
-            path: './'
+            path: './vendor/'
+        }
+    }
+});
+
+app.route({
+    method: 'GET',
+    path: '/',
+    handler: function (request, reply) {
+        if (proc) {
+            reply.file('false.html');
+        } else {
+            reply.file('index.html');
         }
     }
 });
@@ -37,14 +49,10 @@ app.start(function () {
 
 var io = require('socket.io').listen(app.listener);
 io.sockets.on('connection', function(socket){
-    if (!proc) {
-        socket.emit('random');
-    }
     
     socket.on('play', function(id){
         list.forEach(function(zik){
           if (id == zik.id) {
-              socket.broadcast.emit('info', zik.id);
               if (proc) proc.kill();
               proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
                 proc = null;
@@ -61,6 +69,6 @@ io.sockets.on('connection', function(socket){
     
     socket.on('refresh', function(){
         list = ls('./');
-        io.emit('refresh', list);
+        socket.emit('refresh', list);
     });
 });

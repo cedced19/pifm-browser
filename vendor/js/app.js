@@ -8,9 +8,9 @@ angular.module('PifmBrowser', [])
         
       $scope.setzik = function (zik, want) {
         if (zik !== null) {
+          $scope.want = want;
           $scope.lastzik = $scope.currentzik;
-          $scope.currentzik = zik;
-          $scope.want = want; 
+          $scope.currentzik = zik; 
           socket.emit('play', $scope.currentzik.id);
         }
       };
@@ -32,6 +32,8 @@ angular.module('PifmBrowser', [])
           $scope.random(want);
         }
       };
+    
+      $scope.random(false);
         
       socket.on('random', function () {
           if ($scope.want) {
@@ -44,15 +46,6 @@ angular.module('PifmBrowser', [])
       socket.on('refresh', function (data) {
           $scope.musics = data;
           $scope.random(true);
-      });
-      
-      socket.on('info', function (id) {
-          $scope.musics.forEach(function(zik) {
-            if (id == zik.id) {
-                $scope.lastzik = $scope.currentzik;
-                $scope.currentzik = zik;
-            }
-          });
       });
         
     }).error(function () {
