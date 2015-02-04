@@ -1,12 +1,12 @@
 #pifm-browser
-
-__Work in progress!__   
+ 
 A Node.js software to play musics on a __FM radio__.  
 Only on Raspberry Pi.
 
 [![Build Status](https://travis-ci.org/cedced19/pifm-browser.svg)](https://travis-ci.org/cedced19/pifm-browser)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
+ ![](https://raw.githubusercontent.com/cedced19/pifm-browser/master/demo.png)
 
 ##What say laws ?
 You do not have the right to broadcast radio in most countries.  

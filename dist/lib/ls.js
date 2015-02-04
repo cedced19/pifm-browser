@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+'use strict';
 var fs = require('fs');
 var join = require('path').join;
 var getShiny = function (name) {
@@ -13,7 +15,7 @@ var getUnShiny = function (name) {
   return name;
 };
 module.exports = function (root) {
-  var id = 0
+  var id = 0;
   var result = [];
   var queue = ['/'];
   while (queue.length) {

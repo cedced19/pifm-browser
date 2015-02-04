@@ -43,8 +43,17 @@ app.route({
     }
 });
 
+app.route({
+    method: 'GET',
+    path: '/favicon.ico',
+    handler: function (request, reply) {
+            reply.file('favicon.ico');
+    }
+});
+
 app.start(function () {
   console.log('Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
+  console.log('Actual config is ' +  colors.green(config.audio.freq) + ' FM and ' + colors.green(config.audio.rate) + ' Hz');
 });
 
 var io = require('socket.io').listen(app.listener);

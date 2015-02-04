@@ -2,3 +2,7 @@ node_modules/
 .tmp/
 sound---copie.wav
 sound.wav
+dist/vendor/js/app.js
+dist/vendor/js/angular.min.js
+dist/vendor/css/bootstrap.css
+dist/vendor/css/main.css
