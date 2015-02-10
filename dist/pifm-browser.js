@@ -23,6 +23,41 @@ app.route({
 
 app.route({
     method: 'GET',
+    path: '/api/refresh/',
+    handler: function (request, reply) {
+        list = ls('./');
+        reply(list);
+    }
+});
+
+app.route({
+    method: 'GET',
+    path: '/api/play/{id}',
+    handler: function (request, reply) {
+        if (proc) proc.kill();
+        list.forEach(function(zik){
+            if (request.params.id == zik.id) {
+                proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
+                  proc = null;
+                });
+              }
+          });
+        reply({statusCode: 200, success: 'Launched'});
+    }
+});
+
+app.route({
+    method: 'GET',
+    path: '/api/stop/',
+    handler: function (request, reply) {
+        proc && proc.kill();
+        proc = null;
+        reply({statusCode: 200, success: 'Stopped'});
+    }
+});
+
+app.route({
+    method: 'GET',
     path: '/vendor/{param*}',
     handler: {
         directory: {
@@ -54,30 +89,4 @@ app.route({
 app.start(function () {
   console.log('Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
   console.log('Actual config is ' +  colors.green(config.audio.freq) + ' FM and ' + colors.green(config.audio.rate) + ' Hz');
-});
-
-var io = require('socket.io').listen(app.listener);
-io.sockets.on('connection', function(socket){
-    
-    socket.on('play', function(id){
-        list.forEach(function(zik){
-          if (id == zik.id) {
-              if (proc) proc.kill();
-              proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
-                proc = null;
-                socket.emit('random');
-              });
-          }
-      });
-    });
-    
-    socket.on('stop', function(id){
-        proc && proc.kill();
-        proc = null;
-    });
-    
-    socket.on('refresh', function(){
-        list = ls('./');
-        socket.emit('refresh', list);
-    });
 });

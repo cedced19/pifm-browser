@@ -1,52 +1,38 @@
 angular.module('PifmBrowser', [])
 .controller('PifmBrowserCtrl', ['$scope', '$http', function ($scope, $http) {
     $http.get('/api/').success(function (data) {
-      var socket = io.connect(window.location.host);
       $scope.musics = data;
       $scope.currentzik = null;
       $scope.want = false;
         
-      $scope.setzik = function (zik, want) {
+      $scope.setzik = function (zik) {
         if (zik !== null) {
-          $scope.want = want;
           $scope.lastzik = $scope.currentzik;
           $scope.currentzik = zik; 
-          socket.emit('play', $scope.currentzik.id);
+          $http.get('/api/play/'+ $scope.currentzik.id);
         }
       };
         
       $scope.refresh = function () {
-        socket.emit('refresh');
+        $http.get('/api/refresh/').success(function (data) {
+            $scope.musics = data;
+        });
       };
       
       $scope.stop = function () {
-        socket.emit('stop');
-        $scope.want = true;
+        $http.get('/api/stop/');
       };
         
-      $scope.random = function (want) {
+      $scope.random = function () {
         var number = Math.floor(Math.random() * $scope.musics.length);
         if ($scope.currentzik != $scope.musics[number]) {
-          $scope.setzik($scope.musics[number], want);
+          $scope.setzik($scope.musics[number]);
         } else {
-          $scope.random(want);
+          $scope.random();
         }
       };
     
-      $scope.random(false);
-        
-      socket.on('random', function () {
-          if ($scope.want) {
-            $scope.want = false;
-          } else {
-            $scope.random(false);   
-          }
-      });
-        
-      socket.on('refresh', function (data) {
-          $scope.musics = data;
-          $scope.random(true);
-      });
+      $scope.random();
         
     }).error(function () {
       $scope.error = true;
