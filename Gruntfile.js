@@ -8,12 +8,10 @@ module.exports = function(grunt) {
           expand: true,
           src: [
             'index.html',
-            'false.html',
             'vendor/**/*.*',
             'package.json',
             'pifm-browser.js',
-            'pifm',
-            'lib/*.js',
+            'lib/**',
             'favicon.ico',
             'README.md'
           ],

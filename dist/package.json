@@ -1,9 +1,10 @@
 {
   "name": "pifm-browser",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Node.js software to play musics on a FM radio.",
   "main": "pifm-browser",
   "dependencies": {
+    "check-update-github": "0.0.2",
     "colors": "^1.0.3",
     "hapi": "^8.1.0"
   },

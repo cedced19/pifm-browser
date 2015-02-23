@@ -11,8 +11,8 @@
     <title>pifm-browser</title>
 
     <!-- build:css /vendor/css/styles.css -->
-      <link href="/vendor/css/bootstrap.css" rel="stylesheet">
-      <link href="/vendor/css/main.css" rel="stylesheet">
+    <link href="/vendor/css/bootstrap.css" rel="stylesheet">
+    <link href="/vendor/css/main.css" rel="stylesheet">
     <!-- endbuild -->
   </head>
 
@@ -29,10 +29,9 @@
               <h3 class="text-muted">pifm-browser</h3>
             </div>
             <div class="jumbotron">
-                <h1>{{currentzik.name}}</h1>
-                <h4 class="click" ng-click="setzik(lastzik)">Last music: {{lastzik.name}}</h4>
+                <h1>Rock on air !</h1>
                 <p>
-                    <a class="click btn btn-lg btn-success" role="button" ng-click="random()">Change music</a>
+                    <a class="click btn btn-lg btn-success" role="button" ng-click="start()">Start</a>
                     <a class="click btn btn-lg btn-success" role="button" ng-click="stop()">Stop</a>
                 </p>
                 <p>
@@ -44,7 +43,7 @@
             <div>
                 <p><input ng-model="search" type="text" class="form-control" placeholder="Search"></p>
                 <ul>
-                    <li class="click" ng-repeat="zik in musics | filter:search" role="button" ng-click="setzik(zik)">{{zik.name}}</li>
+                    <li class="click" ng-repeat="zik in musics | filter:search">{{zik.name}}</li>
                 </ul>
             </div>
 

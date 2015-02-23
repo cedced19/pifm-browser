@@ -6,10 +6,11 @@ var hapi = require('hapi'),
     fs = require('fs'), 
     colors = require('colors'), 
     config = require('./config.json'),
-    ls = require('./lib/ls'), 
-    list = ls('./'),
-    exec = require('child_process').execFile,
-    proc = null;
+    time = require('./lib/time'),
+    ls = require('./lib/ls'),
+    list = ls(),
+    launch = require('./lib/launch'),
+    stop = false;
 
 app.connection({ port: config.port });
 
@@ -25,23 +26,17 @@ app.route({
     method: 'GET',
     path: '/api/refresh/',
     handler: function (request, reply) {
-        list = ls('./');
+        launch.emit('refresh');
+        list = ls();
         reply(list);
     }
 });
 
 app.route({
     method: 'GET',
-    path: '/api/play/{id}',
+    path: '/api/start/',
     handler: function (request, reply) {
-        if (proc) proc.kill();
-        list.forEach(function(zik){
-            if (request.params.id == zik.id) {
-                proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
-                  proc = null;
-                });
-              }
-          });
+        launch.emit('start');
         reply({statusCode: 200, success: 'Launched'});
     }
 });
@@ -50,8 +45,7 @@ app.route({
     method: 'GET',
     path: '/api/stop/',
     handler: function (request, reply) {
-        proc && proc.kill();
-        proc = null;
+        stop = true;
         reply({statusCode: 200, success: 'Stopped'});
     }
 });
@@ -70,11 +64,7 @@ app.route({
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-        if (proc) {
-            reply.file('false.html');
-        } else {
-            reply.file('index.html');
-        }
+        reply.file('index.html');
     }
 });
 
@@ -82,11 +72,30 @@ app.route({
     method: 'GET',
     path: '/favicon.ico',
     handler: function (request, reply) {
-            reply.file('favicon.ico');
+        reply.file('favicon.ico');
     }
 });
 
 app.start(function () {
-  console.log('Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
-  console.log('Actual config is ' +  colors.green(config.audio.freq) + ' FM and ' + colors.green(config.audio.rate) + ' Hz');
+  console.log(colors.cyan('['+ time() + ']') +' Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
+  console.log(colors.cyan('['+ time() + ']') + ' Actual config is ' +  colors.green(config.audio.freq) + ' FM and ' + colors.green(config.audio.rate) + ' Hz');
+  launch.emit('start');
+  var pkg = require('./package.json');
+  require('check-update-github')({
+      name: pkg.name,
+      currentVersion: pkg.version,
+      user: 'cedced19'
+  }, function (err, lastestVersion, defaultMessage) {
+      if (!err) {
+        console.log(colors.cyan('['+ time() + '] ') + defaultMessage);
+      }
+  });
+});
+
+launch.on('end', function() {
+    if (stop){
+        stop = false;
+    } else {
+        launch.emit('start');
+    }
 });
