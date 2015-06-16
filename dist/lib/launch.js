@@ -1,25 +1,22 @@
 #!/usr/bin/env node
 'use strict';
-var colors = require('colors'), 
+var colors = require('colors'),
     config = require('../config.json'),
-    time = require('./time'),
     exec = require('child_process').execFile,
-    proc = null,
+    list = [],
+    pifm = process.cwd() + '/lib/pifm',
     lastzik = false,
     currentzik = false,
-    ls = require('./ls'), 
-    list = ls(),
-    emitter = require('events').EventEmitter;
+    Emitter = require('events').EventEmitter;
 
-var ee = new emitter();
+var ee = new Emitter();
 
 var set = function (zik) {
     lastzik = currentzik;
-    currentzik = zik; 
-    console.log(colors.cyan('['+ time() + ']') + ' Music ' + colors.green(zik.name) + ' is launched!');
-    proc = exec('./pifm', [zik.uri, config.audio.freq, config.audio.rate], null, function() {
-        proc = null;
-        ee.emit('end');
+    currentzik = zik;
+    ee.emit('new', currentzik);
+    exec(pifm, [zik.uri, config.audio.freq, config.audio.rate], null, function() {
+        random();
     });
 };
 
@@ -32,13 +29,14 @@ var random = function () {
     }
 };
 
-ee.on('start', function () {
-    if (proc) return false;
+ee.on('start', function (data) {
+    list = data;
     random();
 });
 
-ee.on('refresh', function () {
-    list = ls();
+
+ee.on('refresh', function (data) {
+     list = data;
 });
 
 module.exports = ee;

@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 'use strict';
 var hapi = require('hapi'),
-    app = new hapi.Server(), 
-    path = require('path'), 
-    fs = require('fs'), 
-    colors = require('colors'), 
+    app = new hapi.Server(),
+    path = require('path'),
+    fs = require('fs'),
     config = require('./config.json'),
-    time = require('./lib/time'),
+    colors = require('colors'),
     ls = require('./lib/ls'),
     list = ls(),
-    launch = require('./lib/launch'),
-    stop = false;
+    current = {name: 'Rock on air!'},
+    launch = require('./lib/launch');
+
+launch.on('new', function (data) {
+       current = data;
+});
 
 app.connection({ port: config.port });
 
@@ -18,7 +21,11 @@ app.route({
     method: 'GET',
     path: '/api/',
     handler: function (request, reply) {
-        reply(list);
+        reply({
+          current: current,
+          list: list,
+          freq: config.audio.freq
+        });
     }
 });
 
@@ -26,27 +33,9 @@ app.route({
     method: 'GET',
     path: '/api/refresh/',
     handler: function (request, reply) {
-        launch.emit('refresh');
         list = ls();
+        launch.emit('refresh', list);
         reply(list);
-    }
-});
-
-app.route({
-    method: 'GET',
-    path: '/api/start/',
-    handler: function (request, reply) {
-        launch.emit('start');
-        reply({statusCode: 200, success: 'Launched'});
-    }
-});
-
-app.route({
-    method: 'GET',
-    path: '/api/stop/',
-    handler: function (request, reply) {
-        stop = true;
-        reply({statusCode: 200, success: 'Stopped'});
     }
 });
 
@@ -77,9 +66,7 @@ app.route({
 });
 
 app.start(function () {
-  console.log(colors.cyan('['+ time() + ']') +' Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
-  console.log(colors.cyan('['+ time() + ']') + ' Actual config is ' +  colors.green(config.audio.freq) + ' FM and ' + colors.green(config.audio.rate) + ' Hz');
-  launch.emit('start');
+  launch.emit('start', list);
   var pkg = require('./package.json');
   require('check-update-github')({
       name: pkg.name,
@@ -87,15 +74,15 @@ app.start(function () {
       user: 'cedced19'
   }, function (err, lastestVersion, defaultMessage) {
       if (!err) {
-        console.log(colors.cyan('['+ time() + '] ') + defaultMessage);
+        console.log(defaultMessage);
       }
   });
+  console.log('Server running at\n  => ' + colors.green('http://localhost:' + config.port) + '\nCTRL + C to shutdown');
 });
 
-launch.on('end', function() {
-    if (stop){
-        stop = false;
-    } else {
-        launch.emit('start');
-    }
+var io = require('socket.io').listen(app.listener);
+io.sockets.on('connection', function(socket){
+    launch.on('new', function (data) {
+       socket.emit('new', data);
+    });
 });
